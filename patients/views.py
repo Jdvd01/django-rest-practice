@@ -11,14 +11,10 @@ def patients_endpoint(request):
     if request.method == "GET":
         patients = Patient.objects.all()
         serializer = PatientSerializer(patients, many=True)
-
         return Response(serializer.data)
 
-    else:
+    if request.method == "POST":
         serializer = PatientSerializer(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(status=status.HTTP_201_CREATED)
